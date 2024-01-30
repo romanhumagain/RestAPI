@@ -8,7 +8,10 @@ class SportSerializer(serializers.ModelSerializer):
     fields = ["sports_name"]
 
 class PersonSerializer(serializers.ModelSerializer):
-  sports = SportSerializer()
+  sports = SportSerializer(read_only = True)
+  
+  # writing a custom method
+  country = serializers.SerializerMethodField()
   
   class Meta:
     model = Persons
@@ -25,7 +28,10 @@ class PersonSerializer(serializers.ModelSerializer):
     # # to exclude the specific field
     # exclude = ["phone_number"]
     
-    
+  def get_country(self, obj):
+    return "Nepal"  
+  
+  
   # validating the fields
   
   # # validating by specifying the fileds
@@ -37,7 +43,7 @@ class PersonSerializer(serializers.ModelSerializer):
   
   # validating without specifying the fields
   def validate(self, data):
-    
+    print(data)
     # Define a regular expression pattern for special characters
     special_character_pattern = re.compile('[!@#$%^&*()_+{}\[\]:;<>,.?~\\/\|]')
     
@@ -46,7 +52,8 @@ class PersonSerializer(serializers.ModelSerializer):
         raise serializers.ValidationError("Name cannot contain any special characters!")
 
     # Check if age is less than 18
-    if data['age'] < 18:
-        raise serializers.ValidationError("Age cannot be less than 18 years old.")
+    if "age" in data:
+      if  data['age'] < 18:
+          raise serializers.ValidationError("Age cannot be less than 18 years old.")
 
     return data

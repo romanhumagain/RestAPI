@@ -3,7 +3,8 @@ from rest_framework.response import Response
 from rest_framework import status
 from .models import Persons
 from .serializers import PersonSerializer
-
+from rest_framework.views import APIView
+from rest_framework import viewsets
 
 @api_view(['GET', 'POST', 'PUT', 'PATCH'])
 def index(request):
@@ -98,4 +99,52 @@ def person(request):
     
     return Response({'message':'Successfully Deleted Person !'})
 
+  
+  
+# Using the APIView Class to perform CURD operations
+class PersonView(APIView):
+  def get(self, request):
+    person_obj = Persons.objects.all()
+    serializer = PersonSerializer(person_obj, many = True)
+    
+    return Response({'message':"You Hit GET Method !", 'data': serializer.data})
+
+  def post(self, request):
+    data = request.data
+    serializer = PersonSerializer(data = data)
+    if serializer.is_valid():
+      serializer.save()
+      return Response(serializer.data)
+          
+    return Response(serializer.errors)
+  
+  def put(self, request):
+    data = request.data
+    person_obj = Persons.objects.get(id = data["id"])
+    
+    serializer = PersonSerializer(person_obj, data = data)
+    if serializer.is_valid():
+      serializer.save()
+      return Response(serializer.data)
+    
+    return Response(serializer.errors)
+  
+  def patch(self, request):
+    data = request.data
+    person_obj = Persons.objects.get(id = data["id"])
+    
+    serializer = PersonSerializer(person_obj, data= data, partial = True)
+    if serializer.is_valid():
+      serializer.save()
+      return Response(serializer.data)
+    
+    return Response(serializer.errors)
+  
+  def delete(self, request):
+    data = request.data
+    person_obj = Persons.objects.get(id = data['id'])
+    person_obj.delete()
+    
+    return Response({'message':'Successfully Deleted Person !'})
+  
   
