@@ -147,4 +147,19 @@ class PersonView(APIView):
     
     return Response({'message':'Successfully Deleted Person !'})
   
+# Performing the CRUD Operations using modelviewset
+
+class PersonViewSet(viewsets.ModelViewSet):
+  serializer_class = PersonSerializer
   
+  queryset = Persons.objects.all()
+  http_method_names = ['get', 'post', 'put', 'delete', 'head']  
+
+  def list(self, request):
+    searched_data = request.GET.get('search')
+    
+    queryset = self.queryset
+    queryset = queryset.filter(name__startswith = searched_data)
+    
+    serializer = PersonSerializer(queryset, many= True)
+    return Response({'status':200, 'data':serializer.data})
