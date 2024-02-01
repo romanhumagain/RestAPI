@@ -42,6 +42,7 @@ INSTALLED_APPS = [
 # for external apps
 EXTERNAL_APPS = [
     'home', 
+    'generic',
     'rest_framework',
 ]
 
