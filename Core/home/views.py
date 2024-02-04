@@ -6,6 +6,10 @@ from .serializers import PersonSerializer
 from rest_framework.views import APIView
 from rest_framework import viewsets
 
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.authentication import TokenAuthentication
+
+
 @api_view(['GET', 'POST', 'PUT', 'PATCH'])
 def index(request):
   courses = {
@@ -103,7 +107,13 @@ def person(request):
   
 # Using the APIView Class to perform CURD operations
 class PersonView(APIView):
+  
+  permission_classes = [IsAuthenticated]
+  authentication_classes= [TokenAuthentication]
+  
+  
   def get(self, request):
+    print(f"The currently loggedin user: {request.user}")
     person_obj = Persons.objects.all()
     serializer = PersonSerializer(person_obj, many = True)
     
