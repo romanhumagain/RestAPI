@@ -8,8 +8,14 @@ from rest_framework.generics import (
 from .models import Products
 from .serializers import ProductSerializer
 
+from rest_framework_simplejwt.authentication import JWTAuthentication
+from rest_framework.permissions import IsAuthenticated
+
 
 class ListProductAPIView(ListAPIView):
+  authentication_classes = [JWTAuthentication]
+  permission_classes = [IsAuthenticated]
+  
   queryset = Products.objects.all()
   serializer_class = ProductSerializer
   

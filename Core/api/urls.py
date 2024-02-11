@@ -9,6 +9,9 @@ from generic.views import (
   UpdateProductAPIView,
   DestroyProductAPIView
 )
+
+from jwt_auth.views import RegisterAPIView, LoginAPIView, UserAPIView, LogoutUserAPI
+
 from rest_framework.routers import DefaultRouter
 
 router = DefaultRouter()
@@ -30,4 +33,9 @@ urlpatterns = [
   path('user/registration/', UserRegistrationAPIView.as_view(), name="user_registration"),
   path('user/login/', UserLoginAPIView.as_view(), name="user_login"),
   
+  path('register/', RegisterAPIView.as_view(), name="register"),
+  path('login/', LoginAPIView.as_view(), name="login"),
+  path('get/user/', UserAPIView.as_view(), name="get_user"),
+  path('logout/user/', LogoutUserAPI.as_view(), name="logout_user")
+
   ]

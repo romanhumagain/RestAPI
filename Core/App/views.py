@@ -7,6 +7,13 @@ from rest_framework import status
 from rest_framework.authtoken.models import Token
 from django.contrib.auth import authenticate
 
+from rest_framework_simplejwt.tokens import RefreshToken
+
+# to get our custom user model
+from django.contrib.auth import get_user_model
+
+User = get_user_model()
+
 class UserRegistrationAPIView(APIView):
   def post(self, request):
     data = request.data
@@ -17,14 +24,19 @@ class UserRegistrationAPIView(APIView):
       return Response({'status': True, 'message': serializer.errors}, status= status.HTTP_400_BAD_REQUEST)
     
     serializer.save()
-    return Response({'status':True, 'message':'User Created Successfully'}, status=status.HTTP_201_CREATED)
+    user = User.objects.get(email = serializer.validated_data['email'])
+    
+    refresh = RefreshToken.for_user(user)  # creates the jwt token
+    
+    return Response({'status':True, 'message':'User Created Successfully', 'token_data':[{'refresh': str(refresh),
+        'access': str(refresh.access_token)}]}, status=status.HTTP_201_CREATED)
     
 class UserLoginAPIView(APIView):
   def post(self, request):
     data = request.data
     serializer = LoginUserSerializer(data= data)
     if serializer.is_valid():
-      user = authenticate(username = serializer.data['username'], password = serializer.data['password'])
+      user = authenticate(email = serializer.data['email'], password = serializer.data['password'])
       
       if user is not None:
         token, _ = Token.objects.get_or_create(user = user)

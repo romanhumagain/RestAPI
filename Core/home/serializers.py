@@ -2,6 +2,11 @@ from rest_framework import serializers
 from .models import Persons, Sports
 import re
 
+# to get our custom user model
+from django.contrib.auth import get_user_model
+
+User = get_user_model()
+
 class SportSerializer(serializers.ModelSerializer):
   class Meta:
     model = Sports

@@ -3,16 +3,16 @@ from rest_framework import serializers
 from django.contrib.auth.models import User
 from rest_framework import status
 
+# to get our custom user model
+from django.contrib.auth import get_user_model
+
+User = get_user_model()
+
 class UserRegistrationSerializer(serializers.Serializer):
-  username = serializers.CharField()
   email = serializers.EmailField()
   password = serializers.CharField()
   
   def validate(self, data):
-    if data['username']:
-      if User.objects.filter(username = data['username']).exists():
-        return serializers.ValidationError("Username Already Exists !")
-    
     if data['email']:
       if User.objects.filter(email = data['email']).exists():
         return serializers.ValidationError("Email Already Taken !")
@@ -21,7 +21,7 @@ class UserRegistrationSerializer(serializers.Serializer):
       
   
   def create(self, validated_data):
-    user = User.objects.create(username = validated_data['username'], email = validated_data['email'])
+    user = User.objects.create(email = validated_data['email'])
     user.set_password(validated_data['password'])
     user.save()
     
@@ -29,6 +29,6 @@ class UserRegistrationSerializer(serializers.Serializer):
     
     
 class LoginUserSerializer(serializers.Serializer):
-  username = serializers.CharField()
+  email = serializers.EmailField()
   password = serializers.CharField()   
   
