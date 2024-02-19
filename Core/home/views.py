@@ -2,13 +2,15 @@ from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework import status
 from .models import Persons
-from .serializers import PersonSerializer
+from .serializers import PersonSerializer, StudentSerializer
 from rest_framework.views import APIView
 from rest_framework import viewsets
 
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.authentication import TokenAuthentication
 
+from .models import Student
+from django.core.paginator import Paginator
 # to get our custom user model
 from django.contrib.auth import get_user_model
 
@@ -58,8 +60,13 @@ def index(request):
 def person(request):
   if request.method == 'GET':
     person_obj = Persons.objects.all()
+    page_number = request.GET.get('page',1)
     
-    serializer = PersonSerializer(person_obj, many = True)
+    paginator = Paginator(person_obj, 2)
+    
+    page_obj = paginator.get_page(page_number)
+    
+    serializer = PersonSerializer(page_obj, many = True)
     return Response(serializer.data)
   
   if request.method == 'POST':
@@ -178,3 +185,59 @@ class PersonViewSet(viewsets.ModelViewSet):
     
     serializer = PersonSerializer(queryset, many= True)
     return Response({'status':200, 'data':serializer.data})
+  
+  
+# ========== WORKING WITH VIEW SET ==========
+class StudentViewSet(viewsets.ViewSet):
+  
+  def list(self, request):
+    student_inst = Student.objects.all()
+    serailizer = StudentSerializer(student_inst , many = True)
+    return Response(serailizer.data)
+  
+  def retrieve(self, request, pk=None):
+      try:
+          student = Student.objects.get(pk=pk)
+          serializer = StudentSerializer(student)
+          return Response(serializer.data)
+      except Student.DoesNotExist:
+          return Response({"message": "Student not found"}, status=status.HTTP_404_NOT_FOUND)
+  
+  def create(self, request):
+    data = request.data
+    serializer = StudentSerializer(data = data)
+    if serializer.is_valid():
+      serializer.save()
+      return Response({'message':"Data Created !"}, status=status.HTTP_201_CREATED)
+    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+      
+  def update(self, request, pk=None):
+        try:
+            student = Student.objects.get(pk=pk)
+            serializer = StudentSerializer(student, data=request.data)
+            if serializer.is_valid():
+                serializer.save()
+                return Response(serializer.data)
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        except Student.DoesNotExist:
+            return Response({"message": "Student not found"}, status=status.HTTP_404_NOT_FOUND)
+          
+  def partial_update(self, request, pk=None):
+        try:
+            student = Student.objects.get(pk=pk)
+            serializer = StudentSerializer(student, data=request.data, partial = True)
+            if serializer.is_valid():
+                serializer.save()
+                return Response(serializer.data)
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        except Student.DoesNotExist:
+            return Response({"message": "Student not found"}, status=status.HTTP_404_NOT_FOUND)
+
+
+  def destroy(self, request, pk=None):
+      try:
+          student = Student.objects.get(pk=pk)
+          student.delete()
+          return Response({"message": "Student deleted"}, status=status.HTTP_204_NO_CONTENT)
+      except Student.DoesNotExist:
+          return Response({"message": "Student not found"}, status=status.HTTP_404_NOT_FOUND)

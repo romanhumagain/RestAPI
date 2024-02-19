@@ -17,3 +17,15 @@ class Persons(models.Model):
   def __str__(self):
     return self.name
   
+class Student(models.Model):
+  name = models.CharField(max_length = 100)
+  email = models.EmailField(unique = True)
+  phone_no = models.IntegerField(unique = True)
+  address = models.CharField(max_length = 100)
+
+  def clean(self) -> None:
+    if self.phone_no <0:
+      raise ValueError("Provide Valid Phone Number !")
+  
+  def __str__(self) -> str:
+    return self.name

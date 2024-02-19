@@ -1,5 +1,5 @@
 from django.urls import path, include
-from home.views import index, person, PersonView, PersonViewSet
+from home.views import index, person, PersonView, PersonViewSet, StudentViewSet
 from App.views import (UserRegistrationAPIView, 
                        UserLoginAPIView)
 from generic.views import (
@@ -17,12 +17,16 @@ from rest_framework.routers import DefaultRouter
 router = DefaultRouter()
 router.register(r'persons', viewset=PersonViewSet, basename="persons")
 
+router.register(r'students', viewset = StudentViewSet, basename="persons")
+
 
 urlpatterns = [
   path('index/', index, name="index"),
   path('person/', person, name="person"),
   path('person_view/',PersonView.as_view(), name="person_view" ),
   path('person_viewset/', include(router.urls), name="person_viewset"),
+  
+  path('student_viewset/', include(router.urls), name="student_viewset"),
   
   path('list/', ListProductAPIView.as_view(), name="product-list"),
   path('create/', CreateProductAPIView.as_view(), name="product-create"),

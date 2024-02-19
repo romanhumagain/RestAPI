@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Persons, Sports
+from .models import Persons, Sports, Student
 import re
 
 # to get our custom user model
@@ -62,3 +62,8 @@ class PersonSerializer(serializers.ModelSerializer):
           raise serializers.ValidationError("Age cannot be less than 18 years old.")
 
     return data
+
+class StudentSerializer(serializers.ModelSerializer):
+  class Meta:
+    model = Student
+    fields = '__all__'
