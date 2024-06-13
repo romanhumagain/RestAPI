@@ -44,6 +44,7 @@ EXTERNAL_APPS = [
     'home', 
     'generic',
     'App',
+    'viewsets',
     'jwt_auth',
     'rest_framework',
     'rest_framework.authtoken',
@@ -151,6 +152,9 @@ REST_FRAMEWORK = {
 ]
 }
 
+REST_FRAMEWORK = {
+    'DEFAULT_FILTER_BACKENDS': ['django_filters.rest_framework.DjangoFilterBackend'],
+}
 
 AUTH_USER_MODEL = 'jwt_auth.User'
 

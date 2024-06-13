@@ -32,3 +32,7 @@ urlpatterns = [
 urlpatterns += [
     path('api/auth-token/', views.obtain_auth_token)
 ]
+
+urlpatterns += [
+    path('api/viewsets/', include('viewsets.urls'))
+]

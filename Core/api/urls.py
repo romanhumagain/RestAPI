@@ -10,14 +10,27 @@ from generic.views import (
   DestroyProductAPIView
 )
 
+from viewsets.views import ItemViewSet, CommentViewSet
+
 from jwt_auth.views import RegisterAPIView, LoginAPIView, UserAPIView, LogoutUserAPI
 
 from rest_framework.routers import DefaultRouter
+from rest_framework_nested.routers import NestedDefaultRouter
+from rest_framework_nested import routers as routers_i
 
 router = DefaultRouter()
 router.register(r'persons', viewset=PersonViewSet, basename="persons")
 
-router.register(r'students', viewset = StudentViewSet, basename="persons")
+router.register(r'students', viewset = StudentViewSet, basename="students")
+
+
+router_i = routers_i.DefaultRouter()
+router_i.register(r'items',ItemViewSet )
+
+item_router = NestedDefaultRouter(router_i, r'items', lookup = 'item')
+
+item_router.register(r'comments', CommentViewSet, basename='item-comments')
+
 
 
 urlpatterns = [
@@ -40,6 +53,6 @@ urlpatterns = [
   path('register/', RegisterAPIView.as_view(), name="register"),
   path('login/', LoginAPIView.as_view(), name="login"),
   path('get/user/', UserAPIView.as_view(), name="get_user"),
-  path('logout/user/', LogoutUserAPI.as_view(), name="logout_user")
+  path('logout/user/', LogoutUserAPI.as_view(), name="logout_user"),
 
   ]
