@@ -45,11 +45,14 @@ EXTERNAL_APPS = [
     'generic',
     'App',
     'viewsets',
+    'filter',
     'jwt_auth',
     'rest_framework',
     'rest_framework.authtoken',
     "corsheaders",
     'rest_framework_simplejwt',
+    
+    'django_filters',
 ]
 
 INSTALLED_APPS += EXTERNAL_APPS
@@ -209,4 +212,8 @@ SIMPLE_JWT = {
 REST_FRAMEWORK = {
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.LimitOffsetPagination',
     'PAGE_SIZE': 100
+}
+
+REST_FRAMEWORK = {
+    'DEFAULT_FILTER_BACKENDS': ['django_filters.rest_framework.DjangoFilterBackend']
 }

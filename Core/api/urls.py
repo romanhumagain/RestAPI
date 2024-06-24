@@ -12,6 +12,8 @@ from generic.views import (
 
 from viewsets.views import ItemViewSet, CommentViewSet
 
+from filter.views import StudentApiView
+
 from jwt_auth.views import RegisterAPIView, LoginAPIView, UserAPIView, LogoutUserAPI
 
 from rest_framework.routers import DefaultRouter
@@ -54,5 +56,9 @@ urlpatterns = [
   path('login/', LoginAPIView.as_view(), name="login"),
   path('get/user/', UserAPIView.as_view(), name="get_user"),
   path('logout/user/', LogoutUserAPI.as_view(), name="logout_user"),
+  
+  
+  # url for the filter app
+  path('students', StudentApiView.as_view(), name='students')
 
   ]

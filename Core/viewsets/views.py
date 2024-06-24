@@ -68,6 +68,35 @@ class CategoryViewSet(viewsets.ViewSet):
     serializer = CategorySerializer(category)
     return Response(serializer.data)
   
+  def create(self, request):
+    serializer = CategorySerializer(data = request.data)
+    if serializer.is_valid():
+      serializer.save()
+      return Response(serializer.data)
+    return Response(serializer.error, status = status.HTTP_400_BAD_REQUEST)
+  
+  def update(self, request, pk = None):
+    category = get_object_or_404(Category, pk=pk)
+    serializer = CategorySerializer(category, data=request.data)
+    if serializer.is_valid():
+      serializer.save()
+      return Response(serializer.data)
+    
+    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+  
+  def partial_update(self, request, pk=None):
+        category = get_object_or_404(Category, pk=pk)
+        serializer = CategorySerializer(category, data=request.data, partial=True)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+  
+  def destroy(self, request, pk=None):
+      category = get_object_or_404(Category, pk=pk)
+      category.delete()
+      return Response(status=status.HTTP_204_NO_CONTENT)
+  
 class ProductViewSet(viewsets.ViewSet):
   def list(self, request, category_pk=None):
     queryset = Product.objects.filter(category=category_pk)
@@ -79,7 +108,37 @@ class ProductViewSet(viewsets.ViewSet):
     product = get_object_or_404(queryset, pk=pk)
     serializer = ProductSerializer(product)
     return Response(serializer.data)
-  
+
+  def create(self, request, category_pk=None):
+      data = request.data.copy()
+      data['category'] = category_pk
+      serializer = ProductSerializer(data=data)
+      if serializer.is_valid():
+          serializer.save()
+          return Response(serializer.data, status=status.HTTP_201_CREATED)
+      return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+  def update(self, request, pk=None, category_pk=None):
+      product = get_object_or_404(Product, pk=pk, category=category_pk)
+      serializer = ProductSerializer(product, data=request.data)
+      if serializer.is_valid():
+          serializer.save()
+          return Response(serializer.data)
+      return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+  def partial_update(self, request, pk=None, category_pk=None):
+      product = get_object_or_404(Product, pk=pk, category=category_pk)
+      serializer = ProductSerializer(product, data=request.data, partial=True)
+      if serializer.is_valid():
+          serializer.save()
+          return Response(serializer.data)
+      return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+  def destroy(self, request, pk=None, category_pk=None):
+      product = get_object_or_404(Product, pk=pk, category=category_pk)
+      product.delete()
+      return Response(status=status.HTTP_204_NO_CONTENT)
+
 class ReviewViewSet(viewsets.ViewSet):
     def list(self, request, category_pk=None, product_pk=None):
       queryset = Review.objects.filter(product__category=category_pk, product=product_pk)
@@ -91,8 +150,39 @@ class ReviewViewSet(viewsets.ViewSet):
       review = get_object_or_404(queryset, pk=pk)
       serializer = ReviewSerializer(review)
       return Response(serializer.data)  
+    
+    def create(self, request, category_pk = None, product_pk = None):
+      data = request.data
+      data['product'] = product_pk
+      serializer = ReviewSerializer(data = data)
+      if serializer.is_valid():
+        serializer.save()
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
+      return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
+    def update(self, request,pk=None, category_pk=None, product_pk=None):
+      review = get_object_or_404(Review, pk=pk, product = product_pk, product__category = category_pk)
+      serializer = ReviewSerializer(review, data=request.data)
+      if serializer.is_valid():
+          serializer.save()
+          return Response(serializer.data)
+      return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
   
   
+    def partial_update(self, request, pk=None, category_pk=None, product_pk=None):
+        review = get_object_or_404(Review, pk=pk, product=product_pk, product__category=category_pk)
+        serializer = ReviewSerializer(review, data=request.data, partial=True)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def destroy(self, request, pk=None, category_pk=None, product_pk=None):
+        review = get_object_or_404(Review, pk=pk, product=product_pk, product__category=category_pk)
+        review.delete()
+        
+        
+        
 # ========== performing same things using ModelViewSet
 
 # class CategoryViewSet(viewsets.ModelViewSet):
