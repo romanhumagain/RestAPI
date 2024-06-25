@@ -33,7 +33,7 @@ item_router = NestedDefaultRouter(router_i, r'items', lookup = 'item')
 
 item_router.register(r'comments', CommentViewSet, basename='item-comments')
 
-
+from serializer import views
 
 urlpatterns = [
   path('index/', index, name="index"),
@@ -59,6 +59,14 @@ urlpatterns = [
   
   
   # url for the filter app
-  path('students', StudentApiView.as_view(), name='students')
+  path('students', StudentApiView.as_view(), name='students'),
+  
+  
+  path('authors/', views.AuthorListCreateAPIView.as_view(), name='author-list-create'),
+    path('authors/<int:pk>/', views.AuthorDetailAPIView.as_view(), name='author-detail'),
+    path('books/', views.BookListCreateAPIView.as_view(), name='book-list-create'),
+    path('books/<int:pk>/', views.BookDetailAPIView.as_view(), name='book-detail'),
+    path('reviews/', views.ReviewListCreateAPIView.as_view(), name='review-list-create'),
+    path('reviews/<int:pk>/', views.ReviewDetailAPIView.as_view(), name='review-detail'),
 
   ]

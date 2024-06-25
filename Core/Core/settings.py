@@ -46,6 +46,7 @@ EXTERNAL_APPS = [
     'App',
     'viewsets',
     'filter',
+    'serializer',
     'jwt_auth',
     'rest_framework',
     'rest_framework.authtoken',
